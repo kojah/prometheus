@@ -84,7 +84,10 @@ scrape_configs:
 
 	err = prometheusProcess.Start()
 	require.NoError(t, err, "Failed to start Prometheus")
-	defer prometheusProcess.Process.Kill()
+	defer func() {
+		_ = prometheusProcess.Process.Kill()
+		_, _ = prometheusProcess.Process.Wait()
+	}()
 
 	// Wait until the mock server receives at least two requests from Prometheus.
 	require.Eventually(t, func() bool {
